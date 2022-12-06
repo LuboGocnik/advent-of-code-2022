@@ -1,8 +1,14 @@
 use std::collections::HashMap;
 
+const CRLN: &str = "\r\n\r\n";
+const LN: &str = "\n\n";
+
 fn main() {
     let input = include_str!("input.txt");
-    let empty_line = input.find("\n\n").unwrap();
+
+    let empty_line_string = if input.contains(CRLN) { CRLN } else { LN };
+    let empty_line = input.find(empty_line_string).unwrap();
+
     let (cargo, steps) = (&input[..empty_line], &input[empty_line + 2..]);
 
     let mut towers9000 = process_cargo(cargo);
@@ -12,11 +18,11 @@ fn main() {
     for (count, from, to) in steps {
         let mut batch = Vec::new();
         for _ in 0..count {
-            let item = towers9001.get_mut(&from).unwrap().pop().unwrap();
-            batch.push(item);
+            let item9000 = towers9000.get_mut(&from).unwrap().pop().unwrap();
+            towers9000.get_mut(&to).unwrap().push(item9000);
 
-            let item = towers9000.get_mut(&from).unwrap().pop().unwrap();
-            towers9000.get_mut(&to).unwrap().push(item);
+            let item9001 = towers9001.get_mut(&from).unwrap().pop().unwrap();
+            batch.push(item9001);
         }
         for _ in 0..count {
             let item = batch.pop().unwrap();
@@ -41,18 +47,15 @@ fn main() {
 fn process_cargo(cargo: &str) -> HashMap<usize, Vec<char>> {
     let mut towers = HashMap::new();
 
-    let mut lines = cargo.lines().rev();
-    lines.next();
-
-    for line in lines {
-        let size = (line.len() + 2) / 4;
-        let mut line = line.chars();
-        for index in 0..size {
-            match line.nth(if index == 0 { 1 } else { 3 }).unwrap() {
-                ' ' => continue,
-                char => towers.entry(index + 1).or_insert(Vec::new()).push(char),
-            }
-        }
+    for line in cargo.lines().rev().skip(1) {
+        line.chars()
+            .skip(1)
+            .step_by(4)
+            .enumerate()
+            .for_each(|(i, c)| match c {
+                ' ' => (),
+                c => towers.entry(i + 1).or_insert(Vec::new()).push(c),
+            });
     }
 
     towers
@@ -60,15 +63,16 @@ fn process_cargo(cargo: &str) -> HashMap<usize, Vec<char>> {
 
 fn process_steps(input: &str) -> Vec<(usize, usize, usize)> {
     let mut steps = Vec::new();
+
     for line in input.lines() {
-        let mut line = line.split_whitespace();
+        let v = line
+            .split_whitespace()
+            .skip(1)
+            .step_by(2)
+            .map(|v| v.parse::<usize>().unwrap())
+            .collect::<Vec<usize>>();
 
-        let count = line.nth(1).unwrap();
-        let from = line.nth(1).unwrap();
-        let to = line.nth(1).unwrap();
-
-        let [count, from, to] = [count, from, to].map(|c| c.parse::<usize>().unwrap());
-        steps.push((count, from, to));
+        steps.push((v[0], v[1], v[2]));
     }
 
     steps
