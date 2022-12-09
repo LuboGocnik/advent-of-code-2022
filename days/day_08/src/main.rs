@@ -56,7 +56,6 @@ fn check_tree(
     let tree_height = *grid.get(&(x, y)).unwrap();
 
     // right
-    path_clear = true;
     for i in x + 1..max_x {
         right += 1;
         let height = *grid.get(&(i, y)).unwrap();
@@ -68,9 +67,9 @@ fn check_tree(
     if path_clear {
         is_visible = true;
     }
+    path_clear = true;
 
     // left
-    path_clear = true;
     for i in 1..x + 1 {
         left += 1;
         let height = *grid.get(&(x - i, y)).unwrap();
@@ -82,9 +81,9 @@ fn check_tree(
     if path_clear {
         is_visible = true;
     }
+    path_clear = true;
 
     // down
-    path_clear = true;
     for j in y + 1..max_y {
         down += 1;
         let height = *grid.get(&(x, j)).unwrap();
@@ -96,9 +95,9 @@ fn check_tree(
     if path_clear {
         is_visible = true;
     }
+    path_clear = true;
 
     // up
-    path_clear = true;
     for j in 1..y + 1 {
         up += 1;
         let height = *grid.get(&(x, y - j)).unwrap();
