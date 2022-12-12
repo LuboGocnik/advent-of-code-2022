@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-const CRLN: &str = "\r\n\r\n";
-const LN: &str = "\n\n";
+const CRLF: &str = "\r\n\r\n";
+const LF: &str = "\n\n";
 
 fn main() {
     let input = include_str!("input.txt");
 
-    let empty_line_string = if input.contains(CRLN) { CRLN } else { LN };
+    let empty_line_string = if input.contains(CRLF) { CRLF } else { LF };
     let empty_line = input.find(empty_line_string).unwrap();
 
     let (cargo, steps) = (&input[..empty_line], &input[empty_line + 2..]);
